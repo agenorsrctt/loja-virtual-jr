@@ -29,7 +29,7 @@ async function criarCliente(cliente) {
         return novoCliente;
     } catch (error) {
         await transaction.rollbackTransaction();
-        throw error("Erro ao criar cliente: " + error.message)
+        throw Error("Erro ao criar cliente: " + error.message)
     }
 }
 
@@ -44,7 +44,7 @@ async function atualizarCliente(id, cliente) {
         return clienteAtualizado;
     } catch (error) {
         await transaction.rollbackTransaction();
-        throw error("Erro ao atualizar cliente: " + error.message)
+        throw Error("Erro ao atualizar cliente: " + error.message)
     }
 }
 
@@ -59,7 +59,7 @@ async function deletarCliente(id) {
         return clienteDeletado;
     } catch (error) {
         await transaction.rollbackTransaction();
-        throw error("Erro ao deletar cliente: " + error.message)
+        throw Error("Erro ao deletar cliente: " + error.message)
     }
 }
 

@@ -12,7 +12,7 @@ async function criarItemPedido(itemPedido) {
         return novoItemPedido;
     } catch (error) {
         await transaction.rollbackTransaction();
-        throw error("Erro ao criar pedido: " + error.message);
+        throw Error("Erro ao criar pedido: " + error.message);
     }
 }
 

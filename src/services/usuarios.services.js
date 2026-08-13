@@ -25,7 +25,7 @@ async function criarUsuario(usuario) {
             throw new Error('Usuario não criado');
         }
 
-        if(novoUsuario.email.includes("@")){
+        if(!novoUsuario.email.includes("@")){
             throw new Error('Formato de e-mail incorreto, verificar.');
         }
 
@@ -33,7 +33,7 @@ async function criarUsuario(usuario) {
         return novoUsuario;
     } catch (error) {
         await transaction.rollbackTransaction();
-        throw error("Erro ao criar usuario: " + error.message)
+        throw Error("Erro ao criar usuario: " + error.message)
     }
 }
 
@@ -49,7 +49,7 @@ async function atualizarUsuario(id, usuario) {
         return usuarioAtualizado;
     } catch (error) {
         await transaction.rollbackTransaction();
-        throw error("Erro ao atualizar usuario: " + error.message)
+        throw Error("Erro ao atualizar usuario: " + error.message)
     }
 }
 
@@ -64,7 +64,7 @@ async function deletarUsuario(id) {
         return usuarioDeletado;
     } catch (error) {
         await transaction.rollbackTransaction();
-        throw error("Erro ao deletar usuario: " + error.message)
+        throw Error("Erro ao deletar usuario: " + error.message)
     }
 }
 

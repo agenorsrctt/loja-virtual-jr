@@ -28,6 +28,7 @@ db.serialize(() => {
         usuario_id INTEGER NOT NULL,
         data_venda timestamp DEFAULT CURRENT_TIMESTAMP,
         total REAL NOT NULL,
+        status TEXT NOT NULL,
         FOREIGN KEY (cliente_id) REFERENCES clientes(id),
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     )`),

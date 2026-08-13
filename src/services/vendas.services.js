@@ -35,8 +35,11 @@ async function criarVenda(venda) {
         // Calcular o total da venda
         let total = 0;
 
+        // Define status inicial
+        const status = 'pendente'
+
         // Criar a venda
-        const novaVenda = await vendasRepository.criarVenda({ cliente_id, usuario_id, total });
+        const novaVenda = await vendasRepository.criarVenda({ cliente_id, usuario_id, total, status });
 
         // Verificar se os produtos existem e se há estoque suficiente
         for (const item of itens) {
@@ -44,6 +47,11 @@ async function criarVenda(venda) {
             if (!produto) {
                 throw new Error(`Produto com ID ${item.produto_id} não encontrado`);
             }
+            
+            if(item.quantidade <= 0) {
+                throw new Error(`Quantidade deve ser positivo`);
+            }
+
             if (produto.estoque < item.quantidade) {
                 throw new Error(`Estoque insuficiente para o produto ${produto.produto}`);
             }
@@ -69,18 +77,42 @@ async function criarVenda(venda) {
 
         novaVenda.total = total; // Atualizar o total na venda retornada
 
-        await transaction.commit();
+        await transaction.commitTransaction();
 
         return novaVenda;
 
     } catch (erro) {
-        await transaction.rollback();
+        await transaction.rollbackTransaction();
         throw Error('Erro ao criar venda: ' + erro.message);
+    }
+}
+
+async function atualizarStatus(id, status) {
+    try {
+        await transaction.beginTransaction();
+        const statusPagamento = status;
+        if(!statusPagamento) {
+            throw new Error("Nenhum status definido!");
+        }
+
+        const venda = await vendasRepository.buscarVendaPorId(id);
+        if(!venda) {
+            throw new Error("Venda não localizada.");
+        }
+
+        await vendasRepository.atualizarStatus(venda.id, statusPagamento);
+        await transaction.commitTransaction();
+
+        return statusPagamento
+    } catch (error) {
+        await transaction.rollbackTransaction();
+        throw Error('Erro ao atualizar status da venda: ' + error.message);
     }
 }
 
 module.exports = {
     listarVendas,
     buscarVendaPorId,
-    criarVenda
+    criarVenda,
+    atualizarStatus
 };

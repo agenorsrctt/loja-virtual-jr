@@ -40,7 +40,7 @@ async function criarProduto(produto) {
         return novoProduto;
     } catch (error) {
         await transaction.rollbackTransaction();
-        throw error("Erro ao criar produto: " + error.message);
+        throw Error("Erro ao criar produto: " + error.message);
     }
 }
 
@@ -63,7 +63,7 @@ async function atualizarProduto(id, produto) {
         return produtoAtualizado;
     } catch (error) {
         await transaction.rollbackTransaction();
-        throw error("Erro ao atualizar produto: " + error.message);
+        throw Error("Erro ao atualizar produto: " + error.message);
     }
 }
 
@@ -78,7 +78,7 @@ async function deletarProduto(id) {
         return produtoDeletado;
     } catch (error) {
         await transaction.rollbackTransaction();
-        throw error("Erro ao delatar produto: " + error.message)
+        throw Error("Erro ao delatar produto: " + error.message)
     }
 }
 
@@ -97,7 +97,7 @@ async function atualizarEstoqueProduto(id, quantidade) {
         return produtoAtualizado;
     } catch (error) {
         await transaction.rollbackTransaction();
-        throw error("Erro ao atualizar estque: " + error.message)
+        throw Error("Erro ao atualizar estque: " + error.message)
     }
 }
 
