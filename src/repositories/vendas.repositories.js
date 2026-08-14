@@ -14,13 +14,32 @@ async function listarVendas() {
 
 async function buscarVendaPorId(id) {
     return new Promise((resolve, reject) => {
-        db.get('SELECT * FROM vendas WHERE id = ?', [id], (erro, row) => {
-            if (erro) {
-                return reject(erro);
-            } else {
-                resolve(row);
-            }
-        });
+        db.all(`
+            SELECT 
+            v.id, v.data_venda, v.total,
+            p.produto,
+            c.nome AS cliente,
+            u.nome AS vendedor,
+            i.quantidade, i.preco_unitario
+
+            FROM vendas v
+            INNER JOIN usuarios u
+            ON v.usuario_id = u.id
+            INNER JOIN clientes c
+            ON v.cliente_id = c.id
+            INNER JOIN itens_venda i
+            ON i.venda_id = v.id
+            INNER JOIN produtos p
+            ON i.produto_id = p.id
+            WHERE v.id = ?
+            `
+            , [id], (erro, row) => {
+                if (erro) {
+                    return reject(erro);
+                } else {
+                    resolve(row);
+                }
+            });
     });
 }
 
@@ -61,23 +80,10 @@ async function atualizarStatus(id, status) {
     })
 }
 
-async function listarVendaComItens(id) {
-    return new Promise((resolve, reject) => {
-        db.run(`
-            SELECT 
-            v.id, v.data, v.total, 
-            c.nome, c.telefone
-            from vendas v
-            inner join clientes c
-            on v.idcliente = c.id
-            `);
-    })
-}
-
 module.exports = {
     listarVendas,
     buscarVendaPorId,
     criarVenda,
     atualizarTotalVenda,
-    atualizarStatus
+    atualizarStatus,
 };

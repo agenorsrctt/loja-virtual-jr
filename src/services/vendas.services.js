@@ -13,10 +13,25 @@ async function listarVendas() {
 }
 
 async function buscarVendaPorId(id) {
-    const venda = await vendasRepository.buscarVendaPorId(id);
-    if (!venda) {
-        throw new Error('Venda não encontrada');
+    const dados = await vendasRepository.buscarVendaPorId(id);
+
+    if (!dados || dados.length === 0) {
+        throw new Error("Nenhuma venda encontrada com este ID: " + id);
     }
+
+    const venda = {
+        id: dados[0].id,
+        data: dados[0].data_venda,
+        total: dados[0].total,
+        vendedor: dados[0].vendedor,
+        cliente: dados[0].cliente,
+
+        itens: dados.map(item => ({
+            produto: item.produto,
+            quantidade: item.quantidade,
+            valor: item.preco_unitario
+        }))
+    };
 
     return venda;
 }
@@ -47,8 +62,8 @@ async function criarVenda(venda) {
             if (!produto) {
                 throw new Error(`Produto com ID ${item.produto_id} não encontrado`);
             }
-            
-            if(item.quantidade <= 0) {
+
+            if (item.quantidade <= 0) {
                 throw new Error(`Quantidade deve ser positivo`);
             }
 
@@ -91,12 +106,12 @@ async function atualizarStatus(id, status) {
     try {
         await transaction.beginTransaction();
         const statusPagamento = status;
-        if(!statusPagamento) {
+        if (!statusPagamento) {
             throw new Error("Nenhum status definido!");
         }
 
         const venda = await vendasRepository.buscarVendaPorId(id);
-        if(!venda) {
+        if (!venda) {
             throw new Error("Venda não localizada.");
         }
 
@@ -110,9 +125,10 @@ async function atualizarStatus(id, status) {
     }
 }
 
+
 module.exports = {
     listarVendas,
     buscarVendaPorId,
     criarVenda,
-    atualizarStatus
+    atualizarStatus,
 };
