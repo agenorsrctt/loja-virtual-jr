@@ -61,6 +61,19 @@ async function atualizarStatus(id, status) {
     })
 }
 
+async function listarVendaComItens(id) {
+    return new Promise((resolve, reject) => {
+        db.run(`
+            SELECT 
+            v.id, v.data, v.total, 
+            c.nome, c.telefone
+            from vendas v
+            inner join clientes c
+            on v.idcliente = c.id
+            `);
+    })
+}
+
 module.exports = {
     listarVendas,
     buscarVendaPorId,

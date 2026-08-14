@@ -20,6 +20,7 @@ async function buscarUsuarioPorId(id) {
 async function criarUsuario(usuario) {
     try {
         await transaction.beginTransaction();
+        const { nome, senha, email } = usuario;
         const novoUsuario = await usuariosRepository.criarUsuario(usuario);
         if (!novoUsuario) {
             throw new Error('Usuario não criado');

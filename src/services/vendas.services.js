@@ -36,7 +36,7 @@ async function criarVenda(venda) {
         let total = 0;
 
         // Define status inicial
-        const status = 'pendente'
+        const status = 'pendente';
 
         // Criar a venda
         const novaVenda = await vendasRepository.criarVenda({ cliente_id, usuario_id, total, status });
