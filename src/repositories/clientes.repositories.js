@@ -1,8 +1,8 @@
 const db = require('../database/connection');
 
-async function listarClientes() {
+async function listarClientes(empresa_id) {
     return new Promise((resolve, reject) => {
-        db.all('SELECT * FROM clientes', (erro, rows) => {
+        db.all('SELECT * FROM clientes where empresa_id = ?', [empresa_id], (erro, rows) => {
             if (erro) {
                 return reject(erro);
             } else {
@@ -12,9 +12,9 @@ async function listarClientes() {
     });
 }
 
-async function buscarClientePorId(id) {
+async function buscarClientePorId(id, empresa_id) {
     return new Promise((resolve, reject) => {
-        db.get('SELECT * FROM clientes WHERE id = ?', [id], (erro, row) => {
+        db.get('SELECT * FROM clientes WHERE id = ? AND empresa_id', [id, empresa_id], (erro, row) => {
             if (erro) {
                 return reject(erro);
             } else {
@@ -28,37 +28,52 @@ async function buscarClientePorId(id) {
 async function criarCliente(cliente) {
     return new Promise((resolve, reject) => {
         const { nome, telefone, email } = cliente;
-        db.run('INSERT INTO clientes (nome, telefone, email) VALUES (?, ?, ?)', [nome, telefone, email], function (erro) {
+        db.run('INSERT INTO clientes (nome, telefone, email, empresa_id) VALUES (?, ?, ?, ?), [nome, telefone, email, empresa_id]', function (erro) {
             if (erro) {
                 return reject(erro);
-            } else {
-                resolve({ id: this.lastID, ...cliente });
             }
+
+            resolve({ id: this.lastID, ...cliente });
+
         });
     });
 }
 
-async function atualizarCliente(id, cliente) {
+async function atualizarCliente(id, empresa_id, cliente) {
     return new Promise((resolve, reject) => {
         const { nome, telefone, email } = cliente;
-        db.run('UPDATE clientes SET nome = ?, telefone = ?, email = ? WHERE id = ?', [nome, telefone, email, id], function (erro) {
+        db.run('UPDATE clientes SET nome = ?, telefone = ?, email = ? WHERE id = ? AND empresa_id = ?', [nome, telefone, email, id, empresa_id], function (erro) {
             if (erro) {
                 return reject(erro);
-            } else {
-                resolve({ id, ...cliente });
             }
+
+            if (this.changes === 0) {
+                return reject({
+                    mensagem: "Cliente não encontrado."
+                })
+            }
+
+            resolve({ id, ...cliente });
+
         });
     });
 }
 
-async function deletarCliente(id) {
+async function deletarCliente(id, empresa_id) {
     return new Promise((resolve, reject) => {
-        db.run('DELETE FROM clientes WHERE id = ?', [id], function (erro) {
+        db.run('DELETE FROM clientes WHERE id = ? AND empresa_id = ?', [id, empresa_id], function (erro) {
             if (erro) {
                 return reject(erro);
-            } else {
-                resolve({ message: 'Cliente deletado com sucesso' });
             }
+
+            if (this.changes === 0) {
+                return reject({
+                    mensagem: "Cliente não encontrado."
+                })
+            }
+
+            resolve({ message: 'Cliente deletado com sucesso' });
+
         });
     });
 }
