@@ -1,8 +1,8 @@
 const produtosRepository = require('../repositories/produtos.repositories');
 const transaction = require("../database/transaction");
 
-async function listarProdutos() {
-    const produtos = await produtosRepository.listarProdutos();
+async function listarProdutos(empresa_id) {
+    const produtos = await produtosRepository.listarProdutos(empresa_id);
     if (!produtos) {
         throw new Error('Nenhum produto encontrado');
     }
@@ -10,8 +10,8 @@ async function listarProdutos() {
     return produtos;
 }
 
-async function buscarProdutoPorId(id) {
-    const produto = await produtosRepository.buscarProdutoPorId(id);
+async function buscarProdutoPorId(id, empresa_id) {
+    const produto = await produtosRepository.buscarProdutoPorId(id, empresa_id);
     if (!produto) {
         throw new Error('Produto não encontrado');
     }
@@ -19,10 +19,10 @@ async function buscarProdutoPorId(id) {
     return produto;
 }
 
-async function criarProduto(produto) {
+async function criarProduto(produto, empresa_id) {
     try {
         await transaction.beginTransaction()
-        const novoProduto = await produtosRepository.criarProduto(produto);
+        const novoProduto = await produtosRepository.criarProduto(produto, empresa_id);
 
         if (!novoProduto) {
             throw new Error('Produto não criado');
@@ -44,10 +44,10 @@ async function criarProduto(produto) {
     }
 }
 
-async function atualizarProduto(id, produto) {
+async function atualizarProduto(id, produto, empresa_id) {
     try {
         await transaction.beginTransaction()
-        const produtoAtualizado = await produtosRepository.atualizarProduto(id, produto);
+        const produtoAtualizado = await produtosRepository.atualizarProduto(id, produto, empresa_id);
         if (!produtoAtualizado) {
             throw new Error('Erro ao atualizar produto');
         }
@@ -67,7 +67,7 @@ async function atualizarProduto(id, produto) {
     }
 }
 
-async function deletarProduto(id) {
+async function deletarProduto(id, empresa_id) {
     try {
         await transaction.beginTransaction();
         const produtoDeletado = await produtosRepository.deletarProduto(id);
@@ -82,10 +82,10 @@ async function deletarProduto(id) {
     }
 }
 
-async function atualizarEstoqueProduto(id, quantidade) {
+async function atualizarEstoqueProduto(id, quantidade, empresa_id) {
     try {
         await transaction.beginTransaction();
-        const produtoAtualizado = await produtosRepository.atualizarEstoqueProduto(id, quantidade);
+        const produtoAtualizado = await produtosRepository.atualizarEstoqueProduto(id, quantidade, empresa_id);
         if (!produtoAtualizado) {
             throw new Error('Erro ao atualizar estoque do produto');
         }

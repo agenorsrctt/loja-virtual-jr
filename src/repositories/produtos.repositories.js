@@ -1,46 +1,49 @@
 const db = require('../database/connection');
 
-async function listarProdutos() {
+async function listarProdutos(empresa_id) {
     return new Promise((resolve, reject) => {
-        db.all('SELECT * FROM produtos', (erro, rows) => {
+        db.all('SELECT * FROM produtos WHERE empresa_id = ?',[empresa_id], (erro, rows) => {
             if (erro) {
                 return reject(erro);
-            } else {
-                resolve(rows);
             }
+                
+            resolve(rows);
+            
         });
     });
 }
 
-async function buscarProdutoPorId(id) {
+async function buscarProdutoPorId(id, empresa_id) {
     return new Promise((resolve, reject) => {
-        db.get('SELECT * FROM produtos WHERE id = ?', [id], (erro, row) => {
+        db.get('SELECT * FROM produtos WHERE id = ? AND empresa_id = ?', [id, empresa_id], (erro, row) => {
             if (erro) {
                 return reject(erro);
-            } else {
-                resolve(row);
             }
+            
+            resolve(row);
+
         });
     });
 }
 
-async function criarProduto(produto) {
+async function criarProduto(produto, empresa_id) {
     return new Promise((resolve, reject) => {
-        const { produto: nomeProduto, preco, estoque } = produto;
-        db.run('INSERT INTO produtos (produto, preco, estoque) VALUES (?, ?, ?)', [nomeProduto, preco, estoque], function (erro) {
+        const { nomeProduto, preco, estoque } = produto;
+        db.run('INSERT INTO produtos (produto, preco, estoque, empresa_id) VALUES (?, ?, ?, ?)', [nomeProduto, preco, estoque, empresa_id], function (erro) {
             if (erro) {
                 return reject(erro);
-            } else {
-                resolve({ id: this.lastID, ...produto });
-            }
+            } 
+                
+            resolve({ id: this.lastID, ...produto, empresa_id });
+            
         });
     });
 }
 
-async function atualizarProduto(id, produto) {
+async function atualizarProduto(id, produto, empresa_id) {
     return new Promise((resolve, reject) => {
-        const { produto: nomeProduto, preco, estoque } = produto;
-        db.run('UPDATE produtos SET produto = ?, preco = ?, estoque = ? WHERE id = ?', [nomeProduto, preco, estoque, id], function (erro) {
+        const { nomeProduto, preco, estoque } = produto;
+        db.run('UPDATE produtos SET produto = ?, preco = ?, estoque = ? WHERE id = ? AND empresa_id = ?', [nomeProduto, preco, estoque, id, empresa_id], function (erro) {
             if (erro) {
                 return reject(erro);
             }
@@ -49,15 +52,15 @@ async function atualizarProduto(id, produto) {
                 return reject(new Error('Produto não encontrado'))
             }
 
-            resolve({ id, ...produto });
+            resolve({ id, ...produto, empresa_id });
 
         });
     });
 }
 
-async function deletarProduto(id) {
+async function deletarProduto(id, empresa_id) {
     return new Promise((resolve, reject) => {
-        db.run('DELETE FROM produtos WHERE id = ?', [id], function (erro) {
+        db.run('DELETE FROM produtos WHERE id = ? AND empresa_id = ?', [id, empresa_id], function (erro) {
             if (erro) {
                 return reject(erro);
             }
@@ -65,32 +68,35 @@ async function deletarProduto(id) {
             if (this.changes === 0) {
                 return reject(new Error('Produto não encontrado'))
             }
+
             resolve({ id });
 
         });
     });
 }
 
-async function buscarProdutoPorNome(nome) {
+async function buscarProdutoPorNome(nome, empresa_id) {
     return new Promise((resolve, reject) => {
-        db.all('SELECT * FROM produtos WHERE produto = ?', [nome], (erro, row) => {
+        db.all('SELECT * FROM produtos WHERE produto = ? AND empresa_id = ?', [nome, empresa_id], (erro, row) => {
             if (erro) {
                 return reject(erro);
-            } else {
-                resolve(row);
             }
+                
+            resolve(row);
+            
         });
     });
 }
 
-async function atualizarEstoqueProduto(id, novoEstoque) {
+async function atualizarEstoqueProduto(id, novoEstoque, empresa_id) {
     return new Promise((resolve, reject) => {
-        db.run('UPDATE produtos SET estoque = ? WHERE id = ?', [novoEstoque, id], function (erro) {
+        db.run('UPDATE produtos SET estoque = ? WHERE id = ? AND empresa_id = ?', [novoEstoque, id, empresa_id], function (erro) {
             if (erro) {
                 return reject(erro);
-            } else {
-                resolve({ id, estoque: novoEstoque });
             }
+                
+            resolve({ id, estoque: novoEstoque });
+            
         });
     });
 }

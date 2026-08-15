@@ -10,18 +10,18 @@ async function listarClientes() {
     return clientes;
 }
 
-async function buscarClientePorId(id) {
-    const cliente = await clientesRepository.buscarClientePorId(id);
+async function buscarClientePorId(id, empresa_id) {
+    const cliente = await clientesRepository.buscarClientePorId(id, empresa_id);
     if (!cliente) {
         throw new Error('Cliente não encontrado');
     }
     return cliente;
 }
 
-async function criarCliente(cliente) {
+async function criarCliente(cliente, empresa_id) {
     try {
         await transaction.beginTransaction();
-        const novoCliente = await clientesRepository.criarCliente(cliente);
+        const novoCliente = await clientesRepository.criarCliente(cliente, empresa_id);
         if (!novoCliente) {
             throw new Error('Erro ao criar cliente');
         }

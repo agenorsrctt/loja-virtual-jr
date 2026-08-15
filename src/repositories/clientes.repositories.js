@@ -14,7 +14,7 @@ async function listarClientes(empresa_id) {
 
 async function buscarClientePorId(id, empresa_id) {
     return new Promise((resolve, reject) => {
-        db.get('SELECT * FROM clientes WHERE id = ? AND empresa_id', [id, empresa_id], (erro, row) => {
+        db.get('SELECT * FROM clientes WHERE id = ? AND empresa_id = ?', [id, empresa_id], (erro, row) => {
             if (erro) {
                 return reject(erro);
             } else {
@@ -25,15 +25,15 @@ async function buscarClientePorId(id, empresa_id) {
 }
 
 
-async function criarCliente(cliente) {
+async function criarCliente(cliente, empresa_id) {
     return new Promise((resolve, reject) => {
         const { nome, telefone, email } = cliente;
-        db.run('INSERT INTO clientes (nome, telefone, email, empresa_id) VALUES (?, ?, ?, ?), [nome, telefone, email, empresa_id]', function (erro) {
+        db.run('INSERT INTO clientes (nome, telefone, email, empresa_id) VALUES (?, ?, ?, ?),' [nome, telefone, email, empresa_id], function (erro) {
             if (erro) {
                 return reject(erro);
             }
 
-            resolve({ id: this.lastID, ...cliente });
+            resolve({ id: this.lastID, ...cliente, empresa_id });
 
         });
     });
@@ -53,7 +53,7 @@ async function atualizarCliente(id, empresa_id, cliente) {
                 })
             }
 
-            resolve({ id, ...cliente });
+            resolve({ id, ...cliente, empresa_id });
 
         });
     });
