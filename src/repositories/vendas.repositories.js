@@ -1,8 +1,8 @@
 const db = require('../database/connection');
 
-async function listarVendas() {
+async function listarVendas(empresa_id) {
     return new Promise((resolve, reject) => {
-        db.all('SELECT * FROM vendas', (erro, rows) => {
+        db.all('SELECT * FROM vendas WHERE empresa_id = ?',[empresa_id], (erro, rows) => {
             if (erro) {
                 return reject(erro);
             } else {
@@ -43,10 +43,10 @@ async function buscarVendaPorId(id) {
     });
 }
 
-async function criarVenda(venda) {
+async function criarVenda(venda, empresa_id) {
     return new Promise((resolve, reject) => {
         const { cliente_id, usuario_id, total, status } = venda;
-        db.run('INSERT INTO vendas (cliente_id, usuario_id, total, status) VALUES (?, ?, ?, ?)', [cliente_id, usuario_id, total, status], function (erro) {
+        db.run('INSERT INTO vendas (cliente_id, usuario_id, total, status, empresa_id) VALUES (?, ?, ?, ?)', [cliente_id, usuario_id, total, status, empresa_id], function (erro) {
             if (erro) {
                 return reject(erro);
             } else {
@@ -56,9 +56,9 @@ async function criarVenda(venda) {
     });
 }
 
-async function atualizarTotalVenda(id, total) {
+async function atualizarTotalVenda(id, total, empresa_id) {
     return new Promise((resolve, reject) => {
-        db.run('UPDATE vendas SET total = ? WHERE id = ?', [total, id], function (erro) {
+        db.run('UPDATE vendas SET total = ? WHERE id = ? AND empresa_id = ?', [total, id, empresa_id], function (erro) {
             if (erro) {
                 return reject(erro);
             } else {
@@ -68,9 +68,9 @@ async function atualizarTotalVenda(id, total) {
     });
 }
 
-async function atualizarStatus(id, status) {
+async function atualizarStatus(id, status, empresa_id) {
     return new Promise((resolve, reject) => {
-        db.run('UPDATE vendas SET status = ? where id = ?', [status, id], function (erro) {
+        db.run('UPDATE vendas SET status = ? where id = ? AND empresa_id = ?', [status, id, empresa_id], function (erro) {
             if (erro) {
                 return reject(erro)
             } else {

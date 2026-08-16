@@ -3,7 +3,7 @@ const produtosRepository = require('../repositories/produtos.repositories');
 const itensPedidosRepository = require('../repositories/itens_venda.repositories');
 const transaction = require('../database/transaction');
 
-async function listarVendas() {
+async function listarVendas(empresa_id) {
     const vendas = await vendasRepository.listarVendas();
     if (!vendas) {
         throw new Error('Nenhuma venda encontrada');
@@ -12,7 +12,7 @@ async function listarVendas() {
     return vendas;
 }
 
-async function buscarVendaPorId(id) {
+async function buscarVendaPorId(id, empresa_id) {
     const dados = await vendasRepository.buscarVendaPorId(id);
 
     if (!dados || dados.length === 0) {
@@ -36,7 +36,7 @@ async function buscarVendaPorId(id) {
     return venda;
 }
 
-async function criarVenda(venda) {
+async function criarVenda(venda, empresa_id) {
     try {
 
         await transaction.beginTransaction();
@@ -54,11 +54,11 @@ async function criarVenda(venda) {
         const status = 'pendente';
 
         // Criar a venda
-        const novaVenda = await vendasRepository.criarVenda({ cliente_id, usuario_id, total, status });
+        const novaVenda = await vendasRepository.criarVenda({ cliente_id, usuario_id, total, status, empresa_id });
 
         // Verificar se os produtos existem e se há estoque suficiente
         for (const item of itens) {
-            const produto = await produtosRepository.buscarProdutoPorId(item.produto_id);
+            const produto = await produtosRepository.buscarProdutoPorId(item.produto_id, empresa_id);
             if (!produto) {
                 throw new Error(`Produto com ID ${item.produto_id} não encontrado`);
             }
@@ -84,11 +84,11 @@ async function criarVenda(venda) {
 
             // Atualizar o estoque do produto
             const novoEstoque = produto.estoque - item.quantidade;
-            await produtosRepository.atualizarEstoqueProduto(item.produto_id, novoEstoque);
+            await produtosRepository.atualizarEstoqueProduto(item.produto_id, novoEstoque, empresa_id);
         }
 
         // Atualizar o total da venda
-        await vendasRepository.atualizarTotalVenda(novaVenda.id, total);
+        await vendasRepository.atualizarTotalVenda(novaVenda.id, total, empresa_id);
 
         novaVenda.total = total; // Atualizar o total na venda retornada
 
@@ -102,7 +102,7 @@ async function criarVenda(venda) {
     }
 }
 
-async function atualizarStatus(id, status) {
+async function atualizarStatus(id, status, empresa_id) {
     try {
         await transaction.beginTransaction();
         const statusPagamento = status;
@@ -110,7 +110,7 @@ async function atualizarStatus(id, status) {
             throw new Error("Nenhum status definido!");
         }
 
-        const venda = await vendasRepository.buscarVendaPorId(id);
+        const venda = await vendasRepository.buscarVendaPorId(id, empresa_id);
         if (!venda) {
             throw new Error("Venda não localizada.");
         }

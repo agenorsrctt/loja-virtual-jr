@@ -1,27 +1,27 @@
 const usuariosRepository = require('../repositories/usuarios.repositories');
 const transaction = require('../database/transaction');
 
-async function listarUsuarios() {
-    const usuarios = await usuariosRepository.listarUsuarios();
+async function listarUsuarios(empresa_id) {
+    const usuarios = await usuariosRepository.listarUsuarios(empresa_id);
     if (!usuarios) {
         throw new Error('Nenhum usuário encontrado');
     }
     return usuarios;
 }
 
-async function buscarUsuarioPorId(id) {
-    const usuario = await usuariosRepository.buscarUsuarioPorId(id);
+async function buscarUsuarioPorId(id, empresa_id) {
+    const usuario = await usuariosRepository.buscarUsuarioPorId(id, empresa_id);
     if (!usuario) {
         throw new Error('Usuário não encontrado');
     }
     return usuario;
 }
 
-async function criarUsuario(usuario) {
+async function criarUsuario(usuario, empresa_id) {
     try {
         await transaction.beginTransaction();
         const { nome, senha, email } = usuario;
-        const novoUsuario = await usuariosRepository.criarUsuario(usuario);
+        const novoUsuario = await usuariosRepository.criarUsuario(usuario, empresa_id);
         if (!novoUsuario) {
             throw new Error('Usuario não criado');
         }
@@ -38,10 +38,10 @@ async function criarUsuario(usuario) {
     }
 }
 
-async function atualizarUsuario(id, usuario) {
+async function atualizarUsuario(id, usuario, empresa_id) {
     try {
         await transaction.beginTransaction();
-        const usuarioAtualizado = await usuariosRepository.atualizarUsuario(id, usuario);
+        const usuarioAtualizado = await usuariosRepository.atualizarUsuario(id, usuario, empresa_id);
         if (!usuarioAtualizado) {
             throw new Error('Usuario não atualizado');
         }
@@ -54,10 +54,10 @@ async function atualizarUsuario(id, usuario) {
     }
 }
 
-async function deletarUsuario(id) {
+async function deletarUsuario(id, empresa_id) {
     try {
         await transaction.beginTransaction();
-        const usuarioDeletado = await usuariosRepository.deletarUsuario(id);
+        const usuarioDeletado = await usuariosRepository.deletarUsuario(id, empresa_id);
         if (!usuarioDeletado) {
             throw new Error('Usuario não encontrado');
         }

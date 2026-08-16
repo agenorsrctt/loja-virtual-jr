@@ -33,10 +33,10 @@ async function criarCliente(cliente, empresa_id) {
     }
 }
 
-async function atualizarCliente(id, cliente) {
+async function atualizarCliente(id, cliente, empresa_id) {
     try {
         await transaction.beginTransaction();
-        const clienteAtualizado = await clientesRepository.atualizarCliente(id, cliente);
+        const clienteAtualizado = await clientesRepository.atualizarCliente(id, cliente, empresa_id);
         if (!clienteAtualizado) {
             throw new Error('Erro ao atualizar cliente');
         }
@@ -48,10 +48,10 @@ async function atualizarCliente(id, cliente) {
     }
 }
 
-async function deletarCliente(id) {
+async function deletarCliente(id, empresa_id) {
     try {
         await transaction.beginTransaction();
-        const clienteDeletado = await clientesRepository.deletarCliente(id);
+        const clienteDeletado = await clientesRepository.deletarCliente(id, empresa_id);
         if (!clienteDeletado) {
             throw new Error('Erro ao deletar cliente');
         }
