@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", vendasControllers.listarVendas);
+router.get("/itens/:id", vendasControllers.buscarItensVendaPorId)
 router.get("/:id", vendasControllers.buscarVendaPorId);
 router.post("/", vendasControllers.criarVenda);
 router.put("/:id", vendasControllers.atualizarStatus);

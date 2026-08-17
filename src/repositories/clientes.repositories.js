@@ -28,7 +28,7 @@ async function buscarClientePorId(id, empresa_id) {
 async function criarCliente(cliente, empresa_id) {
     return new Promise((resolve, reject) => {
         const { nome, telefone, email } = cliente;
-        db.run('INSERT INTO clientes (nome, telefone, email, empresa_id) VALUES (?, ?, ?, ?),' [nome, telefone, email, empresa_id], function (erro) {
+        db.run('INSERT INTO clientes (nome, telefone, email, empresa_id) VALUES (?, ?, ?, ?)', [nome, telefone, email, empresa_id], function (erro) {
             if (erro) {
                 return reject(erro);
             }

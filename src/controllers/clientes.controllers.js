@@ -12,7 +12,7 @@ async function listarClientes(req, res) {
 
 async function buscarClientePorId(req, res) {
     const { id } = req.params;
-    const empresa_id = req.usuario.empresa_id; /* empresa_id vem do usuario autenticado */
+    const empresa_id = req.usuario.empresa_id;
     try {
         const cliente = await clientesServices.buscarClientePorId(id, empresa_id);
         res.json(cliente);

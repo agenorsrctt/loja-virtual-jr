@@ -5,7 +5,9 @@ function gerarToken(usuario) {
     const token = jwt.sign(
         {
             id: usuario.id,
-            email: usuario.email
+            email: usuario.email,
+            empresa_id: usuario.empresa_id,
+            tipo: usuario.tipo
         },
         process.env.JWT_SECRET,
         {
@@ -46,7 +48,7 @@ function autenticar(req, res, next) {
 
 function somenteAdmin(req, res, next) {
     if(req.usuario.tipo !== "admin") {
-        res.status(403).json({
+        return res.status(403).json({
             mensagem: "Você não tem permissão!"
         })
     }

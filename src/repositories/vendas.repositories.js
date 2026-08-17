@@ -12,7 +12,17 @@ async function listarVendas(empresa_id) {
     });
 }
 
-async function buscarVendaPorId(id) {
+async function buscarVendaPorId(id, empresa_id) {
+    return new Promise((resolve, reject) => {
+        db.get(`SELECT * FROM vendas WHERE id = ? AND empresa_id = ?`, [id, empresa_id], (erro, row) => {
+            if(erro) return reject(erro);
+
+            resolve(row);
+        })
+    })
+}
+
+async function buscarItensVendaPorId(id, empresa_id) {
     return new Promise((resolve, reject) => {
         db.all(`
             SELECT 
@@ -31,9 +41,9 @@ async function buscarVendaPorId(id) {
             ON i.venda_id = v.id
             INNER JOIN produtos p
             ON i.produto_id = p.id
-            WHERE v.id = ?
+            WHERE v.id = ? AND v.empresa_id = ?
             `
-            , [id], (erro, row) => {
+            , [id, empresa_id], (erro, row) => {
                 if (erro) {
                     return reject(erro);
                 } else {
@@ -46,7 +56,7 @@ async function buscarVendaPorId(id) {
 async function criarVenda(venda, empresa_id) {
     return new Promise((resolve, reject) => {
         const { cliente_id, usuario_id, total, status } = venda;
-        db.run('INSERT INTO vendas (cliente_id, usuario_id, total, status, empresa_id) VALUES (?, ?, ?, ?)', [cliente_id, usuario_id, total, status, empresa_id], function (erro) {
+        db.run('INSERT INTO vendas (cliente_id, usuario_id, total, status, empresa_id) VALUES (?, ?, ?, ?, ?)', [cliente_id, usuario_id, total, status, empresa_id], function (erro) {
             if (erro) {
                 return reject(erro);
             } else {
@@ -86,4 +96,5 @@ module.exports = {
     criarVenda,
     atualizarTotalVenda,
     atualizarStatus,
+    buscarItensVendaPorId
 };

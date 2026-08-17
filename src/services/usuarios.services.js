@@ -20,14 +20,20 @@ async function buscarUsuarioPorId(id, empresa_id) {
 async function criarUsuario(usuario, empresa_id) {
     try {
         await transaction.beginTransaction();
-        const { nome, senha, email } = usuario;
+        const { nome, senha, email, tipo, status } = usuario;
+        const statusPermitidos = [
+            "pendente",
+            "aprovado",
+            "cancelado"
+        ];
+
+        if(usuario.tipo !== statusPermitidos.map(item => item)){
+            throw new Error('Status inválido');
+        }
+
         const novoUsuario = await usuariosRepository.criarUsuario(usuario, empresa_id);
         if (!novoUsuario) {
             throw new Error('Usuario não criado');
-        }
-
-        if(!novoUsuario.email.includes("@")){
-            throw new Error('Formato de e-mail incorreto, verificar.');
         }
 
         await transaction.commitTransaction();

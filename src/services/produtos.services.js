@@ -56,7 +56,7 @@ async function atualizarProduto(id, produto, empresa_id) {
             throw new Error('O preço do produto deve ser maior que zero');
         }
 
-        if (produtoAtualizado.estoque <= 0) {
+        if (produtoAtualizado.estoque < 0) {
             throw new Error('O estoque do produto não pode ser negativo');
         }
         await transaction.commitTransaction();
@@ -70,7 +70,7 @@ async function atualizarProduto(id, produto, empresa_id) {
 async function deletarProduto(id, empresa_id) {
     try {
         await transaction.beginTransaction();
-        const produtoDeletado = await produtosRepository.deletarProduto(id);
+        const produtoDeletado = await produtosRepository.deletarProduto(id, empresa_id);
         if (!produtoDeletado) {
             throw new Error('Produto não localizado para deletar');
         }

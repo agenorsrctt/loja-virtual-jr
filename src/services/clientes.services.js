@@ -1,8 +1,8 @@
 const clientesRepository = require('../repositories/clientes.repositories');
 const transaction = require("../database/transaction");
 
-async function listarClientes() {
-    const clientes = await clientesRepository.listarClientes();
+async function listarClientes(empresa_id) {
+    const clientes = await clientesRepository.listarClientes(empresa_id);
     if (!clientes) {
         throw new Error('Nenhum cliente encontrado');
     }
@@ -36,7 +36,7 @@ async function criarCliente(cliente, empresa_id) {
 async function atualizarCliente(id, cliente, empresa_id) {
     try {
         await transaction.beginTransaction();
-        const clienteAtualizado = await clientesRepository.atualizarCliente(id, cliente, empresa_id);
+        const clienteAtualizado = await clientesRepository.atualizarCliente(id, empresa_id, cliente);
         if (!clienteAtualizado) {
             throw new Error('Erro ao atualizar cliente');
         }
